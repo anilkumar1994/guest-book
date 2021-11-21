@@ -11,6 +11,7 @@ const BOATLOAD_OF_GAS = Big(3).times(10 ** 13).toFixed();
 
 const App = ({ contract, currentUser, nearConfig, wallet }) => {
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // TODO: don't just fetch once; subscribe!
@@ -18,7 +19,6 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
   }, []);
 
   useEffect(() => {
-    console.log(window.location.search, 'window.location.pathname')
     if (window.location.search.includes('transactionHashes')) {
       window.location.replace(window.location.origin);
     }
@@ -35,6 +35,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
     // TODO: optimistically update page with new message,
     // update blockchain data in background
     // add uuid to each message, so we know which one is already known
+    setLoading(true);
     contract.addMessage(
       { text: message.value },
       BOATLOAD_OF_GAS,
@@ -46,6 +47,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
         donation.value = SUGGESTED_DONATION;
         fieldset.disabled = false;
         message.focus();
+        setLoading(false);
       });
     });
   };
@@ -72,10 +74,11 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
         }
       </header>
       {currentUser
-        ? <Form onSubmit={onSubmit} currentUser={currentUser} />
+        ? <Form onSubmit={onSubmit} currentUser={currentUser} loading={loading} />
         : <SignIn />
       }
-      {!!currentUser && !!messages.length && <Messages messages={messages} />}
+      {/* {!loading && <span>Processing your message...</span>} */}
+      {!!currentUser && !!messages.length && !loading && <Messages messages={messages} />}
     </main>
   );
 };
