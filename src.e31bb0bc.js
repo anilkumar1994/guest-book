@@ -32341,7 +32341,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function Form({
   onSubmit,
-  currentUser
+  currentUser,
+  loading
 }) {
   return /*#__PURE__*/_react.default.createElement("form", {
     onSubmit: onSubmit
@@ -32360,7 +32361,7 @@ function Form({
     htmlFor: "donation"
   }, "Donation (optional):"), /*#__PURE__*/_react.default.createElement("input", {
     autoComplete: "off",
-    defaultValue: '0',
+    defaultValue: "0",
     id: "donation",
     max: (0, _big.default)(currentUser.balance).div(10 ** 24),
     min: "0",
@@ -32370,7 +32371,9 @@ function Form({
     title: "NEAR Tokens"
   }, "\u24C3")), /*#__PURE__*/_react.default.createElement("button", {
     type: "submit"
-  }, "Sign")));
+  }, loading ? /*#__PURE__*/_react.default.createElement("div", {
+    className: "loader"
+  }) : /*#__PURE__*/_react.default.createElement("span", null, "Sign"))));
 }
 
 Form.propTypes = {
@@ -38143,13 +38146,12 @@ const App = ({
   wallet
 }) => {
   const [messages, setMessages] = (0, _react.useState)([]);
+  const [loading, setLoading] = (0, _react.useState)(false);
   (0, _react.useEffect)(() => {
     // TODO: don't just fetch once; subscribe!
     contract.getMessages().then(setMessages);
   }, []);
   (0, _react.useEffect)(() => {
-    console.log(window.location.search, 'window.location.pathname');
-
     if (window.location.search.includes('transactionHashes')) {
       window.location.replace(window.location.origin);
     }
@@ -38166,6 +38168,7 @@ const App = ({
     // update blockchain data in background
     // add uuid to each message, so we know which one is already known
 
+    setLoading(true);
     contract.addMessage({
       text: message.value
     }, BOATLOAD_OF_GAS, (0, _big.default)(donation.value || '0').times(10 ** 24).toFixed()).then(() => {
@@ -38175,6 +38178,7 @@ const App = ({
         donation.value = SUGGESTED_DONATION;
         fieldset.disabled = false;
         message.focus();
+        setLoading(false);
       });
     });
   };
@@ -38195,8 +38199,9 @@ const App = ({
     onClick: signIn
   }, "Log in")), currentUser ? /*#__PURE__*/_react.default.createElement(_Form.default, {
     onSubmit: onSubmit,
-    currentUser: currentUser
-  }) : /*#__PURE__*/_react.default.createElement(_SignIn.default, null), !!currentUser && !!messages.length && /*#__PURE__*/_react.default.createElement(_Messages.default, {
+    currentUser: currentUser,
+    loading: loading
+  }) : /*#__PURE__*/_react.default.createElement(_SignIn.default, null), !!currentUser && !!messages.length && !loading && /*#__PURE__*/_react.default.createElement(_Messages.default, {
     messages: messages
   }));
 };
@@ -58111,7 +58116,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51998" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61579" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
