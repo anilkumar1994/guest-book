@@ -17,6 +17,14 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
     contract.getMessages().then(setMessages);
   }, []);
 
+  useEffect(() => {
+    console.log(window.location.search, 'window.location.pathname')
+    if (window.location.search.includes('transactionHashes')) {
+      window.location.replace(window.location.origin);
+    }
+
+  }, [window.location.search])
+
   const onSubmit = (e) => {
     e.preventDefault();
 
@@ -53,21 +61,21 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
     wallet.signOut();
     window.location.replace(window.location.origin + window.location.pathname);
   };
-
+  console.log(messages, 'messages')
   return (
     <main>
       <header>
         <h1>NEAR Guest Book</h1>
-        { currentUser
+        {currentUser
           ? <button onClick={signOut}>Log out</button>
           : <button onClick={signIn}>Log in</button>
         }
       </header>
-      { currentUser
+      {currentUser
         ? <Form onSubmit={onSubmit} currentUser={currentUser} />
-        : <SignIn/>
+        : <SignIn />
       }
-      { !!currentUser && !!messages.length && <Messages messages={messages}/> }
+      {!!currentUser && !!messages.length && <Messages messages={messages} />}
     </main>
   );
 };
